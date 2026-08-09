@@ -1,4 +1,4 @@
-import { selectMapCenter } from "../../api/mapSlice";
+import { selectMapCenter, selectActiveBaseMap } from "../../api/mapSlice";
 import { useAppSelector } from "../../app/hooks";
 import AircraftLayer from "../aircraftlayer";
 import AirDefenseRangeLayer from "../airdefenserangelayer";
@@ -20,7 +20,12 @@ import "./LiberationMap.css";
 import { Map } from "leaflet";
 import { useEffect, useRef } from "react";
 import { BasemapLayer } from "react-esri-leaflet";
-import { LayersControl, MapContainer, ScaleControl } from "react-leaflet";
+import { LayersControl, MapContainer, ScaleControl, TileLayer, LayerGroup } from "react-leaflet";
+import { useSelector } from "react-redux";
+import { LayerPersistor } from "./LayerPersistor";
+import { BaseLayer } from "./BaseLayer"
+import { Overlay } from "./Overlay"
+
 
 export default function LiberationMap() {
   const map = useRef<Map>(null);
@@ -28,99 +33,183 @@ export default function LiberationMap() {
   useEffect(() => {
     map.current?.setView(mapCenter, map.current?.getZoom() ?? 8, { animate: true, duration: 1 });
   });
+  const activeBaseMap = useSelector(selectActiveBaseMap);
   return (
     <MapContainer zoom={map.current?.getZoom() ?? 8} zoomControl={false} ref={map}>
       <ScaleControl />
       <LeafletRuler />
+      <LayerPersistor />
       <LayersControl collapsed={false}>
-        <LayersControl.BaseLayer name="Imagery Clarity" checked>
+        <BaseLayer name="Imagery Clarity">
           <BasemapLayer name="ImageryClarity" />
-        </LayersControl.BaseLayer>
-        <LayersControl.BaseLayer name="Imagery Firefly">
+        </BaseLayer>
+        <BaseLayer name="Imagery Firefly">
           <BasemapLayer name="ImageryFirefly" />
-        </LayersControl.BaseLayer>
-        <LayersControl.BaseLayer name="Topographic">
+        </BaseLayer>
+        <BaseLayer name="Topographic">
           <BasemapLayer name="Topographic" />
-        </LayersControl.BaseLayer>
-        <LayersControl.Overlay name="Control points" checked>
+        </BaseLayer>
+        <BaseLayer name="Topographic (3D Relief)">
+          <LayerGroup>
+            <BasemapLayer name="Topographic" />
+            <TileLayer
+              className="hillshade-multiply"
+              url="https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
+              maxNativeZoom={16}
+              maxZoom={20}
+            />
+          </LayerGroup>
+        </BaseLayer>
+        <BaseLayer name="OpenTopoMap">
+          <TileLayer
+            url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+            maxZoom={17}
+            attribution='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; OpenTopoMap'
+          />
+        </BaseLayer>
+        <BaseLayer name="Top-O-Map">
+          <TileLayer
+            url="https://tile.top-o-map.de/{z}/{x}/{y}.png"
+            maxZoom={17}
+            attribution='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Style: &copy; Top-O-Map / OpenTopoMap'
+          />
+        </BaseLayer>
+        <BaseLayer name="Openstreetmap.de (3D Relief)">
+          <LayerGroup>
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png"
+              maxZoom={19}
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Hillshade: &copy; Esri'
+            />
+            <TileLayer
+              url="https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
+              className="hillshade-multiply"
+              maxNativeZoom={16}
+              maxZoom={20}
+            />
+          </LayerGroup>
+        </BaseLayer>
+        <BaseLayer name="OpenStreetMap (English cartocdn)">
+          <LayerGroup>
+            <TileLayer
+              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+              maxZoom={16}
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a> | Hillshade: &copy; Esri'
+            />
+            <TileLayer
+              url="https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
+              className="hillshade-multiply"
+              maxNativeZoom={16}
+              maxZoom={20}
+            />
+          </LayerGroup>
+        </BaseLayer>
+
+        <BaseLayer name="Clean Base (English cartocdn + arcgisonline)">
+          <LayerGroup>
+            <TileLayer
+              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png"
+              maxZoom={19}
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a> | Labels & Hillshade: &copy; Esri'
+            />
+            <TileLayer
+              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png"
+              minZoom={0}
+              maxZoom={12}
+            />
+            <TileLayer
+              url="https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
+              maxNativeZoom={16}
+              minZoom={13}
+              maxZoom={20}
+            />
+            <TileLayer
+              url="https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
+              className="hillshade-multiply"
+              maxNativeZoom={16}
+              maxZoom={20}
+            />
+          </LayerGroup>
+        </BaseLayer>
+        <Overlay name="Control points" defaultChecked={true}>
           <ControlPointsLayer />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Aircraft" checked>
+        </Overlay>
+        <Overlay name="Aircraft" defaultChecked={true}>
           <AircraftLayer />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Active combat" checked>
+        </Overlay>
+        <Overlay name="Active combat" defaultChecked={true}>
           <CombatLayer />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Air defenses" checked>
+        </Overlay>
+        <Overlay name="Air defenses" defaultChecked={true}>
           <TgosLayer categories={["aa"]} />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="LORAD" >
+        </Overlay>
+        <Overlay name="LORAD" >
           <TgosLayer categories={["aa"]} task={"LORAD"} />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="MERAD" >
+        </Overlay>
+        <Overlay name="MERAD" >
           <TgosLayer categories={["aa"]} task={"MERAD"} />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="SHORAD" >
+        </Overlay>
+        <Overlay name="SHORAD" >
           <TgosLayer categories={["aa"]} task={"SHORAD"} />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="AAA" >
+        </Overlay>
+        <Overlay name="AAA" >
           <TgosLayer categories={["aa"]} task={"AAA"} />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Factories" checked>
+        </Overlay>
+        <Overlay name="Factories" defaultChecked={true}>
           <TgosLayer categories={["factory"]} />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Ships" checked>
+        </Overlay>
+        <Overlay name="Ships" defaultChecked={true}>
           <TgosLayer categories={["ship"]} />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Other ground objects" checked>
+        </Overlay>
+        <Overlay name="Other ground objects" defaultChecked={true}>
           <TgosLayer categories={["aa", "factory", "ship"]} exclude />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Supply routes" checked>
+        </Overlay>
+        <Overlay name="Supply routes" defaultChecked={true}>
           <SupplyRoutesLayer />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Front lines" checked>
+        </Overlay>
+        <Overlay name="Front lines" defaultChecked={true}>
           <FrontLinesLayer />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Enemy SAM threat range" checked>
+        </Overlay>
+        <Overlay name="Enemy SAM threat range" defaultChecked={true}>
           <AirDefenseRangeLayer blue={false} />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Enemy SAM detection range">
+        </Overlay>
+        <Overlay name="Enemy SAM detection range">
           <AirDefenseRangeLayer blue={false} detection />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Enemy IADS Network">
+        </Overlay>
+        <Overlay name="Enemy IADS Network">
           <Iadsnetworklayer blue={false} />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Allied SAM threat range">
+        </Overlay>
+        <Overlay name="Allied SAM threat range">
           <AirDefenseRangeLayer blue={true} />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Allied SAM detection range">
+        </Overlay>
+        <Overlay name="Allied SAM detection range">
           <AirDefenseRangeLayer blue={true} detection />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Highlight radar emitter on hover" checked>
+        </Overlay>
+        <Overlay name="Highlight radar emitter on hover" defaultChecked={true}>
           <EmitterHighlightToggle />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Allied IADS Network">
+        </Overlay>
+        <Overlay name="Allied IADS Network">
           <Iadsnetworklayer blue={true} />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Selected flight plan">
+        </Overlay>
+        <Overlay name="Selected flight plan">
           <FlightPlansLayer selectedOnly />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="All blue flight plans" checked>
+        </Overlay>
+        <Overlay name="All blue flight plans" defaultChecked={true}>
           <FlightPlansLayer blue={true} />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="All red flight plans">
+        </Overlay>
+        <Overlay name="All red flight plans">
           <FlightPlansLayer blue={false} />
-        </LayersControl.Overlay>
+        </Overlay>
       </LayersControl>
       <LayersControl position="topleft">
         <CoalitionThreatZones blue={true} />
         <CoalitionThreatZones blue={false} />
-        <LayersControl.Overlay name="Blue navmesh">
+        <Overlay name="Blue navmesh">
           <NavMeshLayer blue={true} />
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Red navmesh">
+        </Overlay>
+        <Overlay name="Red navmesh">
           <NavMeshLayer blue={false} />
-        </LayersControl.Overlay>
+        </Overlay>
         <TerrainZonesLayers />
         <CullingExclusionZones />
         <WaypointDebugZonesControls />
