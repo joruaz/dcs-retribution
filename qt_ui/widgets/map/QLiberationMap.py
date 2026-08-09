@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import logging
+import os
 from pathlib import Path
 
 from PySide6.QtCore import QUrl
-from PySide6.QtWebEngineCore import QWebEnginePage, QWebEngineSettings
+from PySide6.QtWebEngineCore import QWebEnginePage, QWebEngineSettings, QWebEngineProfile
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
 from game.server.settings import ServerSettings
@@ -34,7 +35,29 @@ class QLiberationMap(QWebEngineView):
         self.game_model = game_model
         self.setMinimumSize(800, 600)
 
-        self.page = LoggingWebPage(self)
+        # Store profile in %LOCALAPPDATA%/DCSRetribution/web_profile
+        local_app_data = os.getenv("LOCALAPPDATA")
+        if local_app_data:
+            storage_dir = Path(local_app_data) / "DCSRetribution" / "web_profile"
+        else:
+            storage_dir = Path.home() / ".config" / "DCSRetribution" / "web_profile"
+
+        storage_dir.mkdir(parents=True, exist_ok=True)
+        storage_path = str(storage_dir.resolve())
+
+        # Instantiate an explicit named profile (forces a new persistent Chromium session)
+        self.profile = QWebEngineProfile("LiberationMapProfile", self)
+        self.profile.setPersistentStoragePath(storage_path)
+        self.profile.setCachePath(storage_path)
+        self.profile.setHttpCacheType(QWebEngineProfile.HttpCacheType.MemoryHttpCache)
+
+        self.page = LoggingWebPage(self.profile, self)
+
+        settings = self.page.settings()
+        settings.setAttribute(
+            QWebEngineSettings.WebAttribute.LocalStorageEnabled, True
+        )
+
         # Required to allow "cross-origin" access from file:// scoped canvas.html to the
         # localhost HTTP backend.
         self.page.settings().setAttribute(
