@@ -5,7 +5,11 @@ import os
 from pathlib import Path
 
 from PySide6.QtCore import QUrl
-from PySide6.QtWebEngineCore import QWebEnginePage, QWebEngineSettings, QWebEngineProfile
+from PySide6.QtWebEngineCore import (
+    QWebEnginePage,
+    QWebEngineSettings,
+    QWebEngineProfile,
+)
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
 from game.server.settings import ServerSettings
@@ -54,9 +58,7 @@ class QLiberationMap(QWebEngineView):
         self.page = LoggingWebPage(self.profile, self)
 
         settings = self.page.settings()
-        settings.setAttribute(
-            QWebEngineSettings.WebAttribute.LocalStorageEnabled, True
-        )
+        settings.setAttribute(QWebEngineSettings.WebAttribute.LocalStorageEnabled, True)
 
         # Required to allow "cross-origin" access from file:// scoped canvas.html to the
         # localhost HTTP backend.
