@@ -11,7 +11,6 @@ export type EmitterHoverSource = "emitter" | "ring";
 
 const BASEMAP_STORAGE_KEY = "active_basemap_layer";
 const OVERLAYS_STORAGE_KEY = "active_map_overlays";
-const DEFAULT_BASEMAP = "Imagery Clarity";
 
 const safeGetItem = (key: string): string | null => {
   try {
@@ -36,7 +35,7 @@ const loadSavedOverlays = (): Record<string, boolean> => {
   try {
     return JSON.parse(saved);
   } catch (error) {
-    console.error("Failed to parse saved map overlays JSON:", error);
+    console.warn("Failed to parse saved map overlays JSON:", error);
     return {};
   }
 };
@@ -52,7 +51,7 @@ interface MapState {
   // the map's layer control.
   highlightEmitters: boolean;
   // Persistent Map type 
-  activeBaseMap: string;
+  activeBaseMap: string | null;
   // Persistent Map options
   overlayStates: Record<string, boolean>;
 }
@@ -62,7 +61,7 @@ const initialState: MapState = {
   hoveredEmitterId: null,
   hoveredEmitterSource: null,
   highlightEmitters: true,
-  activeBaseMap: localStorage.getItem(BASEMAP_STORAGE_KEY) || DEFAULT_BASEMAP,
+  activeBaseMap: localStorage.getItem(BASEMAP_STORAGE_KEY),
   overlayStates: loadSavedOverlays(),
 };
 
@@ -121,8 +120,8 @@ export const selectHighlightEmitters = (state: RootState) =>
 export const selectActiveBaseMap = (state: RootState) =>
   state.map.activeBaseMap;
 export const selectOverlayChecked =
-  (name: string, defaultChecked: boolean) =>
-  (state: RootState) =>
-    state.map.overlayStates[name] ?? defaultChecked;
+  (name: string, defaultChecked: boolean = false) =>
+  (state: RootState): boolean =>
+    state.map.overlayStates?.[name] ?? defaultChecked;
   
 export default mapSlice.reducer;
