@@ -20,7 +20,7 @@ import "./LiberationMap.css";
 import { Map } from "leaflet";
 import { useEffect, useRef } from "react";
 import { BasemapLayer } from "react-esri-leaflet";
-import { LayersControl, MapContainer, ScaleControl } from "react-leaflet";
+import { LayersControl, MapContainer, ScaleControl, LayerGroup, TileLayer } from "react-leaflet";
 import { LayerPersistor } from "../mapcontrollayers/LayerPersistor";
 import { MapBaseLayer } from "../mapcontrollayers/MapBaseLayer"
 import { MapOverlay } from "../mapcontrollayers/MapOverlay"
@@ -46,6 +46,88 @@ export default function LiberationMap() {
         </MapBaseLayer>
         <MapBaseLayer name="Topographic">
           <BasemapLayer name="Topographic" />
+        </MapBaseLayer>
+        <MapBaseLayer name="Topographic (3D Relief)">
+          <LayerGroup>
+            <BasemapLayer name="Topographic" />
+            <TileLayer
+              className="hillshade-multiply"
+              url="https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
+              maxNativeZoom={16}
+              maxZoom={20}
+            />
+          </LayerGroup>
+        </MapBaseLayer>
+        <MapBaseLayer name="OpenTopoMap">
+          <TileLayer
+            url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+            maxZoom={17}
+            attribution='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; OpenTopoMap'
+          />
+        </MapBaseLayer>
+        <MapBaseLayer name="Top-O-Map">
+          <TileLayer
+            url="https://tile.top-o-map.de/{z}/{x}/{y}.png"
+            maxZoom={17}
+            attribution='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Style: &copy; Top-O-Map / OpenTopoMap'
+          />
+        </MapBaseLayer>
+        <MapBaseLayer name="Openstreetmap.de (3D Relief)">
+          <LayerGroup>
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png"
+              maxZoom={19}
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Hillshade: &copy; Esri'
+            />
+            <TileLayer
+              url="https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
+              className="hillshade-multiply"
+              maxNativeZoom={16}
+              maxZoom={20}
+            />
+          </LayerGroup>
+        </MapBaseLayer>
+        <MapBaseLayer name="OpenStreetMap (English cartocdn)">
+          <LayerGroup>
+            <TileLayer
+              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+              maxZoom={16}
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a> | Hillshade: &copy; Esri'
+            />
+            <TileLayer
+              url="https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
+              className="hillshade-multiply"
+              maxNativeZoom={16}
+              maxZoom={20}
+            />
+          </LayerGroup>
+        </MapBaseLayer>
+
+        <MapBaseLayer name="Clean Base (English cartocdn + arcgisonline)">
+          <LayerGroup>
+            <TileLayer
+              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png"
+              maxZoom={19}
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a> | Labels & Hillshade: &copy; Esri'
+            />
+            <TileLayer
+              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png"
+              minZoom={0}
+              maxZoom={12}
+            />
+            <TileLayer
+              url="https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
+              maxNativeZoom={16}
+              minZoom={13}
+              maxZoom={20}
+            />
+            <TileLayer
+              url="https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
+              className="hillshade-multiply"
+              maxNativeZoom={16}
+              maxZoom={20}
+            />
+          </LayerGroup>
         </MapBaseLayer>
         <MapOverlay name="Control points" defaultChecked={true}>
           <ControlPointsLayer />
