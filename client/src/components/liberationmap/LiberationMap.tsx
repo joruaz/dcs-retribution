@@ -20,7 +20,7 @@ import "./LiberationMap.css";
 import { Map } from "leaflet";
 import { useEffect, useRef } from "react";
 import { BasemapLayer } from "react-esri-leaflet";
-import { LayersControl, MapContainer, ScaleControl, TileLayer, LayerGroup } from "react-leaflet";
+import { LayersControl, MapContainer, ScaleControl } from "react-leaflet";
 import { useSelector } from "react-redux";
 import { LayerPersistor } from "../mapcontrollayers/LayerPersistor";
 import { MapBaseLayer } from "../mapcontrollayers/MapBaseLayer"
@@ -33,7 +33,6 @@ export default function LiberationMap() {
   useEffect(() => {
     map.current?.setView(mapCenter, map.current?.getZoom() ?? 8, { animate: true, duration: 1 });
   });
-  const activeBaseMap = useSelector(selectActiveBaseMap);
   return (
     <MapContainer zoom={map.current?.getZoom() ?? 8} zoomControl={false} ref={map}>
       <ScaleControl />
