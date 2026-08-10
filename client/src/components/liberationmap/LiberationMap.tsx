@@ -1,4 +1,4 @@
-import { selectMapCenter, selectActiveBaseMap } from "../../api/mapSlice";
+import { selectMapCenter } from "../../api/mapSlice";
 import { useAppSelector } from "../../app/hooks";
 import AircraftLayer from "../aircraftlayer";
 import AirDefenseRangeLayer from "../airdefenserangelayer";
@@ -21,7 +21,6 @@ import { Map } from "leaflet";
 import { useEffect, useRef } from "react";
 import { BasemapLayer } from "react-esri-leaflet";
 import { LayersControl, MapContainer, ScaleControl } from "react-leaflet";
-import { useSelector } from "react-redux";
 import { LayerPersistor } from "../mapcontrollayers/LayerPersistor";
 import { MapBaseLayer } from "../mapcontrollayers/MapBaseLayer"
 import { MapOverlay } from "../mapcontrollayers/MapOverlay"

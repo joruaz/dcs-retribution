@@ -120,8 +120,8 @@ export const selectHighlightEmitters = (state: RootState) =>
 export const selectActiveBaseMap = (state: RootState) =>
   state.map.activeBaseMap;
 export const selectOverlayChecked =
-  (name: string, defaultChecked: boolean) =>
-  (state: RootState) =>
-    state.map.overlayStates[name] ?? defaultChecked;
+  (name: string, defaultChecked: boolean = false) =>
+  (state: RootState): boolean =>
+    state.map.overlayStates?.[name] ?? defaultChecked;
   
 export default mapSlice.reducer;

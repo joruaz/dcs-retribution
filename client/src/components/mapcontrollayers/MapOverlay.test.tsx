@@ -39,6 +39,7 @@ const renderWithRedux = (
         center: { lat: 0, lng: 0 },
         hoveredEmitterId: null,
         hoveredEmitterSource: null,
+        highlightEmitters: false, // <-- Added required property
         activeBaseMap: null,
         overlayStates,
       },

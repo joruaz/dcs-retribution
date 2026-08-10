@@ -28,7 +28,7 @@ describe("LayerPersistor", () => {
     registeredEvents = {};
   });
 
-  it("registers leafet map event listeners on mount", () => {
+  it("registers leaflet map event listeners on mount", () => {
     const store = createTestStore();
     render(
       <Provider store={store}>
@@ -49,10 +49,9 @@ describe("LayerPersistor", () => {
       </Provider>
     );
 
-    // Simulate Leaflet firing baselayerchange
     registeredEvents.baselayerchange({ name: "Topographic" });
 
-    expect(selectActiveBaseMap(store.getState())).toBe("Topographic");
+    expect(selectActiveBaseMap(store.getState() as any)).toBe("Topographic");
   });
 
   it("dispatches setOverlayState with checked=true on overlayadd event", () => {
@@ -63,10 +62,9 @@ describe("LayerPersistor", () => {
       </Provider>
     );
 
-    // Simulate Leaflet firing overlayadd
     registeredEvents.overlayadd({ name: "Airfields" });
 
-    expect(selectOverlayChecked("Airfields")(store.getState())).toBe(true);
+    expect(selectOverlayChecked("Airfields", false)(store.getState() as any)).toBe(true);
   });
 
   it("dispatches setOverlayState with checked=false on overlayremove event", () => {
@@ -77,13 +75,11 @@ describe("LayerPersistor", () => {
       </Provider>
     );
 
-    // First turn it on
     registeredEvents.overlayadd({ name: "Airfields" });
-    expect(selectOverlayChecked("Airfields")(store.getState())).toBe(true);
+    expect(selectOverlayChecked("Airfields", false)(store.getState() as any)).toBe(true);
 
-    // Simulate Leaflet firing overlayremove
     registeredEvents.overlayremove({ name: "Airfields" });
 
-    expect(selectOverlayChecked("Airfields")(store.getState())).toBe(false);
+    expect(selectOverlayChecked("Airfields", false)(store.getState() as any)).toBe(false);
   });
 });

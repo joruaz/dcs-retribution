@@ -30,7 +30,7 @@ jest.mock("react-leaflet", () => ({
 
 const renderWithRedux = (
   ui: React.ReactElement,
-  initialState = { activeBaseMap: null }
+  initialState?: { activeBaseMap?: string | null }
 ) => {
   const store = configureStore({
     reducer: { map: mapReducer },
@@ -39,8 +39,9 @@ const renderWithRedux = (
         center: { lat: 0, lng: 0 },
         hoveredEmitterId: null,
         hoveredEmitterSource: null,
+        highlightEmitters: false,
         overlayStates: {},
-        ...initialState,
+        activeBaseMap: initialState?.activeBaseMap ?? null, // Guarantees string | null
       },
     },
   });
