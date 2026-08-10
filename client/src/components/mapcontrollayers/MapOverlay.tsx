@@ -3,13 +3,13 @@ import { LayersControl } from "react-leaflet";
 import { useSelector } from "react-redux";
 import { selectOverlayChecked } from "../../api/mapSlice";
 
-interface OverlayProps {
+interface MapOverlayProps {
   name: string;
   defaultChecked?: boolean;
   children: React.ReactNode;
 }
 
-export const Overlay: React.FC<OverlayProps> = ({
+export const MapOverlay: React.FC<MapOverlayProps> = ({
   name,
   defaultChecked = false,
   children,
