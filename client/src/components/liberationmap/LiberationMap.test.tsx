@@ -26,6 +26,8 @@ jest.mock("react-leaflet", () => {
       return <div data-testid="map-container">{children}</div>;
     }),
     ScaleControl: () => <div data-testid="scale-control" />,
+    LayerGroup: ({ children }: any) => <div data-testid="layer-group">{children}</div>,
+    TileLayer: ({ url }: { url: string }) => <div data-testid="tile-layer" data-url={url} />,
     LayersControl: Object.assign(
       ({ children, position }: any) => (
         <div data-testid="layers-control" data-position={position || "topright"}>
@@ -75,12 +77,11 @@ jest.mock("../threatzones", () => ({ CoalitionThreatZones: () => <div data-testi
 jest.mock("../navmesh/NavMeshLayer", () => () => <div data-testid="layer-navmesh" />);
 jest.mock("../terrainzones/TerrainZonesLayers", () => () => <div data-testid="layer-terrain-zones" />);
 jest.mock("../cullingexclusionzones/CullingExclusionZones", () => () => <div data-testid="layer-culling-zones" />);
-jest.mock("../waypointdebugzones/WaypointDebugZonesControls", () => ({ WaypointDebugZonesControls: () => <div data-testid="layer-waypoint-debug" /> }));
+jest.mock("../waypointdebugzones/WaypointDebugZonesControls", () => ({
+  WaypointDebugZonesControls: () => <div data-testid="layer-waypoint-debug" />,
+}));
 
-const renderWithRedux = (
-  ui: React.ReactElement,
-  initialMapState = {}
-) => {
+const renderWithRedux = (ui: React.ReactElement, initialMapState = {}) => {
   const store = configureStore({
     reducer: { map: mapReducer },
     preloadedState: {
@@ -88,7 +89,7 @@ const renderWithRedux = (
         center: { lat: 42.0, lng: 43.0 },
         hoveredEmitterId: null,
         hoveredEmitterSource: null,
-        highlightEmitters: false, // <--- Add this missing required property
+        highlightEmitters: false,
         activeBaseMap: null,
         overlayStates: {},
         ...initialMapState,
@@ -113,15 +114,19 @@ describe("LiberationMap", () => {
     expect(screen.getByTestId("layer-persistor")).toBeInTheDocument();
   });
 
-  it("renders basemap layers within LayersControl", () => {
+  it("renders updated basemap layers within LayersControl", () => {
     renderWithRedux(<LiberationMap />);
 
     const baseLayers = screen.getAllByTestId("leaflet-base-layer");
     const names = baseLayers.map((el) => el.getAttribute("data-name"));
 
-    expect(names).toContain("Imagery Clarity");
-    expect(names).toContain("Imagery Firefly");
-    expect(names).toContain("Topographic");
+    expect(names).toEqual([
+      "Imagery Clarity",
+      "Imagery Firefly",
+      "Topographic (3D Relief)",
+      "OpenStreetMap",
+      "OpenTopoMap",
+    ]);
   });
 
   it("renders expected overlay options within LayersControl", () => {
