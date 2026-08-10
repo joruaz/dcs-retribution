@@ -36,7 +36,7 @@ const loadSavedOverlays = (): Record<string, boolean> => {
   try {
     return JSON.parse(saved);
   } catch (error) {
-    console.error("Failed to parse saved map overlays JSON:", error);
+    console.warn("Failed to parse saved map overlays JSON:", error);
     return {};
   }
 };
