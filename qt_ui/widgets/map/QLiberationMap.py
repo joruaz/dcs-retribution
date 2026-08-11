@@ -41,12 +41,12 @@ class QLiberationMap(QWebEngineView):
         self.game_model = game_model
         self.setMinimumSize(800, 600)
 
-        # Store profile in %LOCALAPPDATA%/DCSRetribution/web_profile
+        # Store profile in %LOCALAPPDATA%/DCSRetribution/map_web_profile
         local_app_data = os.getenv("LOCALAPPDATA")
         if local_app_data:
-            storage_dir = Path(local_app_data) / "DCSRetribution" / "web_profile"
+            storage_dir = Path(local_app_data) / "DCSRetribution" / "map_web_profile"
         else:
-            storage_dir = Path.home() / ".config" / "DCSRetribution" / "web_profile"
+            storage_dir = Path.home() / ".config" / "DCSRetribution" / "map_web_profile"
 
         storage_dir.mkdir(parents=True, exist_ok=True)
         storage_path = str(storage_dir.resolve())
