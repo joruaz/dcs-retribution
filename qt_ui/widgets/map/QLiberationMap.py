@@ -16,6 +16,8 @@ from game.server.settings import ServerSettings
 from qt_ui.liberation_install import server_port
 from qt_ui.models import GameModel
 
+MAX_CACHE_BYTES = 100 * 1024 * 1024
+
 
 class LoggingWebPage(QWebEnginePage):
     def javaScriptConsoleMessage(
@@ -52,8 +54,10 @@ class QLiberationMap(QWebEngineView):
         # Instantiate an explicit named profile (forces a new persistent Chromium session)
         self.profile = QWebEngineProfile("LiberationMapProfile", self)
         self.profile.setPersistentStoragePath(storage_path)
+
+        self.profile.setHttpCacheType(QWebEngineProfile.HttpCacheType.DiskHttpCache)
+        self.profile.setHttpCacheMaximumSize(MAX_CACHE_BYTES)
         self.profile.setCachePath(storage_path)
-        self.profile.setHttpCacheType(QWebEngineProfile.HttpCacheType.MemoryHttpCache)
 
         self.page = LoggingWebPage(self.profile, self)
 
