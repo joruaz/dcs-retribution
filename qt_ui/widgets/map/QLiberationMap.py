@@ -5,12 +5,14 @@ import os
 from pathlib import Path
 
 from PySide6.QtCore import QUrl
+from PySide6.QtGui import QCloseEvent
 from PySide6.QtWebEngineCore import (
     QWebEnginePage,
     QWebEngineSettings,
     QWebEngineProfile,
 )
 from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtWidgets import QApplication
 
 from game.server.settings import ServerSettings
 from qt_ui.liberation_install import server_port
@@ -51,22 +53,24 @@ class QLiberationMap(QWebEngineView):
         storage_dir.mkdir(parents=True, exist_ok=True)
         storage_path = str(storage_dir.resolve())
 
-        # Instantiate an explicit named profile (forces a new persistent Chromium session)
+        # Instantiate profile
         self.profile = QWebEngineProfile("LiberationMapProfile", self)
         self.profile.setPersistentStoragePath(storage_path)
-
         self.profile.setHttpCacheType(QWebEngineProfile.HttpCacheType.DiskHttpCache)
         self.profile.setHttpCacheMaximumSize(MAX_CACHE_BYTES)
         self.profile.setCachePath(storage_path)
 
-        self.page = LoggingWebPage(self.profile, self)
+        self.page_instance = LoggingWebPage(self.profile, self)
 
-        settings = self.page.settings()
+        # Hook application shutdown and widget destruction to clean up the page early
+        app = QApplication.instance()
+        if app:
+            app.aboutToQuit.connect(self._cleanup)
+        self.destroyed.connect(self._cleanup)
+
+        settings = self.page_instance.settings()
         settings.setAttribute(QWebEngineSettings.WebAttribute.LocalStorageEnabled, True)
-
-        # Required to allow "cross-origin" access from file:// scoped canvas.html to the
-        # localhost HTTP backend.
-        self.page.settings().setAttribute(
+        settings.setAttribute(
             QWebEngineSettings.WebAttribute.LocalContentCanAccessRemoteUrls, True
         )
 
@@ -74,11 +78,20 @@ class QLiberationMap(QWebEngineView):
             url = QUrl("http://localhost:3000")
         else:
             url = QUrl.fromLocalFile(str(Path("client/build/index.html").resolve()))
+
         server_settings = ServerSettings.get(server_port())
         host = server_settings.server_bind_address
         if host.startswith("::"):
             host = f"[{host}]"
         port = server_settings.server_port
         url.setQuery(f"server={host}:{port}")
-        self.page.load(url)
-        self.setPage(self.page)
+
+        self.page_instance.load(url)
+        self.setPage(self.page_instance)
+
+    def _cleanup(self) -> None:
+        """Detaches and schedules the WebEngine page for deletion before profile teardown."""
+        if hasattr(self, "page_instance") and self.page_instance is not None:
+            self.setPage(None)
+            self.page_instance.deleteLater()
+            self.page_instance = None
