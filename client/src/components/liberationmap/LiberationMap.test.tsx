@@ -51,6 +51,11 @@ jest.mock("react-leaflet", () => {
   };
 });
 
+// Mock BlendedTileLayer to prevent HTMLCanvasElement context issues in JSDOM
+jest.mock("../mapcontrollayers/BlendedTileLayer", () => ({
+  BlendedTileLayer: () => <div data-testid="blended-tile-layer" />,
+}));
+
 // Mock Esri Basemap
 jest.mock("react-esri-leaflet", () => ({
   BasemapLayer: ({ name }: { name: string }) => <div data-testid={`esri-basemap-${name}`} />,
@@ -126,6 +131,9 @@ describe("LiberationMap", () => {
       "Topographic (3D Relief)",
       "OpenStreetMap",
       "OpenTopoMap",
+      "Esri Dark Gray",
+      "CARTO Dark Matter",
+      "Tactical Dark OSM",
     ]);
   });
 

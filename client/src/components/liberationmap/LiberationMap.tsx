@@ -20,7 +20,7 @@ import "./LiberationMap.css";
 import { Map } from "leaflet";
 import { useEffect, useRef } from "react";
 import { BasemapLayer } from "react-esri-leaflet";
-import { LayersControl, MapContainer, ScaleControl, LayerGroup, TileLayer } from "react-leaflet";
+import { LayersControl, MapContainer, ScaleControl, TileLayer } from "react-leaflet";
 import { LayerPersistor } from "../mapcontrollayers/LayerPersistor";
 import { MapBaseLayer } from "../mapcontrollayers/MapBaseLayer"
 import { MapOverlay } from "../mapcontrollayers/MapOverlay"
@@ -50,6 +50,7 @@ export default function LiberationMap() {
             baseUrl="https://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
             overlayUrl="https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
             blendMode="multiply"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a> | Hillshade &copy; Esri'
           />
         </MapBaseLayer>
         <MapBaseLayer name="OpenStreetMap">
@@ -57,6 +58,7 @@ export default function LiberationMap() {
             baseUrl="https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png"
             overlayUrl="https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
             blendMode="multiply"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a> | Hillshade &copy; Esri'
           />
         </MapBaseLayer>
         <MapBaseLayer name="OpenTopoMap">
@@ -64,6 +66,39 @@ export default function LiberationMap() {
             url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
             maxZoom={17}
             attribution='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; OpenTopoMap'
+          />
+        </MapBaseLayer>
+        <MapBaseLayer name="Esri Dark Gray">
+          <BlendedTileLayer
+            baseUrl="https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+            overlayUrl="https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
+            labelsUrl="https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
+            attribution="Tiles &copy; Esri &mdash; Esri, HERE, Garmin, FAO, NOAA, USGS"
+            blendMode="screen"
+            overlayFilter="invert(100%) contrast(120%) brightness(125%)"
+            overlayOpacity={0.6}
+          />
+        </MapBaseLayer>
+        <MapBaseLayer name="CARTO Dark Matter">
+          <BlendedTileLayer
+            baseUrl="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
+            overlayUrl="https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
+            labelsUrl="https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a> | Hillshade &copy; Esri'
+            blendMode="screen"
+            overlayFilter="invert(100%) contrast(120%) brightness(125%)"
+            overlayOpacity={0.6}
+          />
+        </MapBaseLayer>
+        <MapBaseLayer name="Tactical Dark OSM">
+          <BlendedTileLayer
+            baseUrl="https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png"
+            overlayUrl="https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Hillshade &copy; Esri'
+            baseFilter="invert(100%) hue-rotate(180deg) brightness(0.9) contrast(150%)"
+            blendMode="screen"
+            overlayFilter="invert(100%) contrast(120%) brightness(120%)"
+            overlayOpacity={0.6}
           />
         </MapBaseLayer>
         <MapOverlay name="Control points" defaultChecked={true}>
