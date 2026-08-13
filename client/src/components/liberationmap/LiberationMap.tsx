@@ -24,6 +24,7 @@ import { LayersControl, MapContainer, ScaleControl, LayerGroup, TileLayer } from
 import { LayerPersistor } from "../mapcontrollayers/LayerPersistor";
 import { MapBaseLayer } from "../mapcontrollayers/MapBaseLayer"
 import { MapOverlay } from "../mapcontrollayers/MapOverlay"
+import { BlendedTileLayer } from "../mapcontrollayers/BlendedTileLayer";
 
 
 export default function LiberationMap() {
@@ -45,30 +46,18 @@ export default function LiberationMap() {
           <BasemapLayer name="ImageryFirefly" />
         </MapBaseLayer>
         <MapBaseLayer name="Topographic (3D Relief)">
-          <LayerGroup>
-            <BasemapLayer name="Topographic" />
-            <TileLayer
-              className="hillshade-multiply"
-              url="https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
-              maxNativeZoom={16}
-              maxZoom={20}
-            />
-          </LayerGroup>
+          <BlendedTileLayer
+            baseUrl="https://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
+            overlayUrl="https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
+            blendMode="multiply"
+          />
         </MapBaseLayer>
         <MapBaseLayer name="OpenStreetMap">
-          <LayerGroup>
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png"
-              maxZoom={19}
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Hillshade: &copy; Esri'
-            />
-            <TileLayer
-              url="https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
-              className="hillshade-multiply"
-              maxNativeZoom={16}
-              maxZoom={20}
-            />
-          </LayerGroup>
+          <BlendedTileLayer
+            baseUrl="https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png"
+            overlayUrl="https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
+            blendMode="multiply"
+          />
         </MapBaseLayer>
         <MapBaseLayer name="OpenTopoMap">
           <TileLayer
