@@ -128,6 +128,7 @@ describe("LiberationMap", () => {
     expect(names).toEqual([
       "Imagery Clarity",
       "Imagery Firefly",
+      "Topographic",
       "Topographic (3D Relief)",
       "OpenStreetMap",
       "OpenTopoMap",

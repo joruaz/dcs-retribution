@@ -45,6 +45,9 @@ export default function LiberationMap() {
         <MapBaseLayer name="Imagery Firefly">
           <BasemapLayer name="ImageryFirefly" />
         </MapBaseLayer>
+        <MapBaseLayer name="Topographic">
+          <BasemapLayer name="Topographic" />
+        </MapBaseLayer>
         <MapBaseLayer name="Topographic (3D Relief)">
           <BlendedTileLayer
             baseUrl="https://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
