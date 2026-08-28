@@ -82,17 +82,6 @@ export default function LiberationMap() {
             overlayOpacity={0.6}
           />
         </MapBaseLayer>
-        <MapBaseLayer name="CARTO Dark Matter">
-          <BlendedTileLayer
-            baseUrl="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
-            overlayUrl="https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
-            labelsUrl="https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a> | Hillshade &copy; Esri'
-            blendMode="screen"
-            overlayFilter="invert(100%) contrast(120%) brightness(125%)"
-            overlayOpacity={0.6}
-          />
-        </MapBaseLayer>
         <MapBaseLayer name="Tactical Dark OSM">
           <BlendedTileLayer
             baseUrl="https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png"

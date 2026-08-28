@@ -133,7 +133,6 @@ describe("LiberationMap", () => {
       "OpenStreetMap",
       "OpenTopoMap",
       "Esri Dark Gray",
-      "CARTO Dark Matter",
       "Tactical Dark OSM",
     ]);
   });
